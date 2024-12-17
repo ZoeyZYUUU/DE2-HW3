@@ -1,0 +1,240 @@
+# %%
+import requests
+from bs4 import BeautifulSoup
+
+# %%
+# Specifying the URL
+
+# Point and click selector: https://selectorgadget.com/
+urls = [
+    "https://edition.cnn.com/2024/10/30/cars/chinese-byd-net-revenue-beat-tesla-first-time-intl-hnk/index.html",
+    "https://www.bbc.com/news/articles/c4gm9j11mvdo",
+    "https://finance.sina.com.cn/wm/2024-11-03/doc-incuupqy0947065.shtml"
+]
+
+for url in urls:
+    print(f"webpage crawling: {url}")
+
+    # Sending a request to the webpage
+    response = requests.get(url)
+
+# Ensure the request was successful
+if response.status_code != 200:
+    raise Exception(f"Failed to fetch webpage: Status code {response.status_code}")
+
+# %%
+
+# Parsing the HTML content
+webpage = BeautifulSoup(response.content, "html.parser")
+# Using CSS selectors to scrape the section
+description_html = webpage.select(".article__content")
+texts = [text.get_text().strip() for text in description_html]
+text = "\n".join(texts)
+
+print(text)
+
+# %%
+# %% [markdown]
+# ## Setting up AWS Credentials
+
+# %%
+import pprint
+
+import boto3
+
+pp = pprint.PrettyPrinter(indent=2)
+# %%
+# Language Detection
+comprehend = boto3.client(service_name="comprehend", region_name="eu-west-1")
+
+# Detect language
+text = "This is a test sentence in English"
+pp.pprint(comprehend.detect_dominant_language(Text=text))
+
+# %%
+# Multi-lingual Language Detection
+text = "A: Hallo, wie geht es Ihnen?\nB: Ça va bien. Merci. Et toi?"
+pp.pprint(comprehend.detect_dominant_language(Text=text))
+
+
+# %%
+# Sentiment Analysis
+text = "Hey, I'm feeling great today!"
+print(comprehend.detect_sentiment(Text=text, LanguageCode="en"))
+
+# %%
+# Sentiment Analysis
+text = (
+    "Chronicles the experiences of a formerly successful banker as a prisoner in the gloomy jailhouse "
+    "of Shawshank after being found guilty of a crime he did not commit. The film portrays the man's unique way "
+    "of dealing with his new, torturous life; along the way he befriends a number of fellow prisoners, most notably "
+    "a wise long-term inmate named Red."
+)
+print(comprehend.detect_sentiment(Text=text, LanguageCode="en"))
+
+
+# %%
+# ## Named Entity Recognition
+texts = ["Amazon provides web services.", "Jeff is their leader."]
+for text in texts:
+    print(comprehend.detect_entities(Text=text, LanguageCode="en"))
+
+# %%
+# ## Key Phrase Detection
+for text in texts:
+    print(comprehend.detect_key_phrases(Text=text, LanguageCode="en"))
+
+
+
+# %%
+# Import required libraries for web scraping
+print("📚 Setting up the environment...")
+
+import requests
+from bs4 import BeautifulSoup
+
+print("✅ Libraries imported successfully")
+
+# %%
+# Define the URL and proper headers
+print("🌐 Attempting to access webpage with proper headers...")
+
+url = "https://finance.sina.com.cn/wm/2024-11-03/doc-incuupqy0947065.shtml"
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"
+}
+
+try:
+    response = requests.get(url, headers=headers)
+    print(f"📡 Response status code: {response.status_code}")
+
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch webpage: Status code {response.status_code}")
+
+    content_length = len(response.content)
+    print(f"✅ Successfully retrieved the webpage! Received {content_length} bytes of data.")
+except Exception as e:
+    print(f"❌ Error: {str(e)}")
+
+# %%
+# Parse the HTML and extract the required elements
+print("🔍 Parsing webpage content...")
+
+try:
+    # Parse the HTML
+    webpage = BeautifulSoup(response.content, "html.parser")
+
+    # Extract the title
+    title = webpage.select_one(".main-title").get_text().strip()
+    print("\n📑 Article Title:")
+    print("-" * 40)
+    print(title)
+    print("-" * 40)
+
+    # Extract paragraphs under #artibody
+    print("\n📝 Article Content:")
+    print("-" * 40)
+    article_body = webpage.select("#artibody p")
+    texts = [p.get_text().strip() for p in article_body]
+    text = "\n".join(texts)
+    print(text)
+    print("-" * 40)
+
+    print("\n✅ Content extracted successfully")
+except Exception as e:
+    print(f"❌ Error parsing content: {str(e)}")
+
+
+
+
+
+
+# %%
+# Import required libraries for web scraping and translation
+print("📚 Setting up the environment...")
+
+import requests
+from bs4 import BeautifulSoup
+from pprint import PrettyPrinter
+import boto3
+
+print("✅ Libraries imported successfully")
+
+# Pretty print setup
+pp = PrettyPrinter(indent=2)
+
+# AWS Translate client setup
+translate = boto3.client("translate")
+print("✅ Environment setup complete!")
+print(f"🌍 Using AWS region: {translate.meta.region_name}")
+
+# %%
+# Define the URL and headers
+print("🌐 Attempting to access webpage with proper headers...")
+
+url = "https://finance.sina.com.cn/wm/2024-11-03/doc-incuupqy0947065.shtml"
+
+headers = {
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36"
+}
+
+try:
+    response = requests.get(url, headers=headers)
+    print(f"📡 Response status code: {response.status_code}")
+
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch webpage: Status code {response.status_code}")
+
+    content_length = len(response.content)
+    print(f"✅ Successfully retrieved the webpage! Received {content_length} bytes of data.")
+except Exception as e:
+    print(f"❌ Error: {str(e)}")
+
+# %%
+# Parse the HTML and extract content
+print("🔍 Parsing webpage content...")
+
+try:
+    # Parse the HTML
+    webpage = BeautifulSoup(response.content, "html.parser")
+
+    # Extract title
+    title = webpage.select_one(".main-title").get_text().strip()
+    print("\n📑 Article Title:")
+    print("-" * 40)
+    print(title)
+    print("-" * 40)
+
+    # Extract paragraphs under #artibody
+    print("\n📝 Article Content:")
+    print("-" * 40)
+    article_body = webpage.select("#artibody p")
+    texts = [p.get_text().strip() for p in article_body]
+    text_to_translate = "\n".join(texts)
+    print(text_to_translate)
+    print("-" * 40)
+
+    print("\n✅ Content extracted successfully")
+except Exception as e:
+    print(f"❌ Error parsing content: {str(e)}")
+
+# %%
+# Translate the extracted text using AWS Translate
+print("🔄 Translating with auto-detection...")
+
+try:
+    response = translate.translate_text(
+        Text=text_to_translate, SourceLanguageCode="auto", TargetLanguageCode="en"
+    )
+
+    print("\n📝 Translation details:")
+    print(f"🌐 Detected Language: {response['SourceLanguageCode']}")
+    print("\n📑 Translated Text:")
+    print("-" * 40)
+    print(response['TranslatedText'])
+    print("-" * 40)
+except Exception as e:
+    print(f"❌ Error during translation: {str(e)}")
+
+
